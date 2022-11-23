@@ -1,10 +1,11 @@
 import React from 'react';
 import './App.css';
-import Table from './tests/componentes/Table';
+import Home from './page/Home';
+// import Table from './tests/componentes/Table';
 
 function App() {
   return (
-    <Table />
+    <Home />
   );
 }
 

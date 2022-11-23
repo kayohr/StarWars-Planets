@@ -1,11 +1,47 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import PlanetsConxtet from "../context/PlanetsContext";
 
 
 function Table(){
-    const {data} = useContext(PlanetsConxtet);
-    console.log(data)
+    const {data, filter} = useContext(PlanetsConxtet);
+    const [search, setSearch] = useState({
+      name: '',
+     })
+
+    // const searchName= () => {
+    //   const dataSearchName = data.filter((el) => el.name.toUpperCase().includes(search.name?.toUpperCase()))
+  
+    // }
+
+    const handleChange= ({target}) => {
+      // const dataSearchName = data.filter((el) => el.name.includes(search.name))
+      
+      setSearch({...dataSearchName, [target.name]:target.value });
+      // setSearch(target.value);
+      // setSearch(dataSearchName);
+    }
+    
+    const dataSearchName = data.filter((el) => el.name.toUpperCase().includes(search.name?.toUpperCase()))
+    // console.log(data)
     return (
+      <>
+      <form>
+        <input
+        data-testid='name-filter'
+        onChange={handleChange}
+        type="text" name='name' 
+        value={search.name}
+        placeholder="search bar"
+
+        >
+          {/* <input
+          placeholder="search bar">
+          </input> */}
+          {/* <button type="button" onClick={handleClick}>Filter Episode</button> */}
+          
+        </input>
+      </form>
+      
         <table>
             <thead>
             <tr>
@@ -29,7 +65,7 @@ function Table(){
             <tbody>
       {
         data.length === 0 ? <p>Nada Encontrado</p> :
-        data.map((el) => (
+        dataSearchName.map((el) => (
           <tr key={ el.name } >
             <td>{el.name}</td>
           <td>{el.rotation_period}</td>
@@ -50,6 +86,7 @@ function Table(){
       }
       </tbody>
         </table>
+        </>
     );
 }
 
