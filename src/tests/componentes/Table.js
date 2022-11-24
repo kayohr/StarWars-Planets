@@ -1,11 +1,14 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PlanetsConxtet from "../context/PlanetsContext";
 
 
 function Table(){
-    const {data, filter} = useContext(PlanetsConxtet);
+    const {data, filter, setData} = useContext(PlanetsConxtet);
     const [search, setSearch] = useState({
       name: '',
+      comparison: 'maior que',
+      column: 'population',
+      value: 0,
      })
 
     // const searchName= () => {
@@ -16,13 +19,31 @@ function Table(){
     const handleChange= ({target}) => {
       // const dataSearchName = data.filter((el) => el.name.includes(search.name))
       
-      setSearch({...dataSearchName, [target.name]:target.value });
+      setSearch({...search, [target.name]:target.value });
       // setSearch(target.value);
       // setSearch(dataSearchName);
     }
     
     const dataSearchName = data.filter((el) => el.name.toUpperCase().includes(search.name?.toUpperCase()))
     // console.log(data)
+
+    const filterInformations = () => {
+     
+      switch (search.comparison) {
+       case "maior que":
+        setData(dataSearchName.filter((el) => +el[search.column] > +search.value))
+        console.log('xablau');
+         break;
+         case "menor que":
+          setData(dataSearchName.filter((el) => +el[search.column] < +search.value))
+          break;
+         case "igual a":
+          setData(dataSearchName.filter((el) => +el[search.column] === +search.value))
+         break;
+       default:
+      }
+    }
+    
     return (
       <>
       <form>
@@ -40,7 +61,43 @@ function Table(){
           {/* <button type="button" onClick={handleClick}>Filter Episode</button> */}
           
         </input>
-      </form>
+      
+      <select
+      data-testid='column-filter'
+      name="column"
+      onChange={ handleChange }>
+      <option value="population">population</option>
+      <option value="orbital_period">orbital_period</option>
+      <option value="diameter">diameter</option>
+      <option value="rotation_period">rotation_period</option>
+      <option value="surface_water">surface_water</option>
+      
+      </select>
+
+      <select
+      data-testid='comparison-filter'
+      name="comparison"
+      onChange={ handleChange }>
+        <option value="maior que">maior que</option>
+        <option value="menor que">menor que</option>
+        <option value="igual a">igual a</option>
+        </select>
+
+        <input
+        data-testid="value-filter"
+        placeholder="value filter"
+        name="value"
+        value={ search.value }
+        onChange={ handleChange }
+        >
+        </input>
+        <button
+        data-testid='button-filter'
+        type="button"
+        onClick={filterInformations}
+
+        >Filter</button>
+        </form>
       
         <table>
             <thead>

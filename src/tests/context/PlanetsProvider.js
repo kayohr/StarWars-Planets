@@ -15,7 +15,8 @@ export default function PlanetsProvider({children}){
     data,
     filters,
     setFilters,
- }), [data, filters, setFilters])
+    setData,
+ }), [data, filters, setFilters, setData])
 
     return (
         <PlanetsConxtet.Provider value={value}>
