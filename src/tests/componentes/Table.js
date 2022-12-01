@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import PlanetsConxtet from "../context/PlanetsContext";
+import requestAPIFetch from '../../services/RequestAPI';
 
 
 function Table(){
     const {data, setData, search, setSearch, filters, setFilters, arrayColum, setArrayColum} = useContext(PlanetsConxtet);
     const [information, setInformation] = useState([]);
-    const [test, setTest] = useState({ testando: [],});
+    const [test, setTest] = useState({});
 
     // const searchName= () => {
     //   const dataSearchName = data.filter((el) => el.name.toUpperCase().includes(search.name?.toUpperCase()))
@@ -20,11 +21,16 @@ function Table(){
       // setSearch(dataSearchName);
     }
     
-    const dataSearchName = data.filter((el) => el.name.toUpperCase().includes(search.name?.toUpperCase()))
     // console.log(data)
+    
+      const dataSearchName = data.filter((el) => el.name.toUpperCase().includes(search.name?.toUpperCase()))
 
+    
+    
     const filterInformations = () => {
       setInformation([...information, search])
+      
+      // setTest([...data])
       switch (search.comparison) {
        case "maior que":
         setData(dataSearchName.filter((el) => +el[search.column] > +search.value))
@@ -35,21 +41,23 @@ function Table(){
           break;
          case "igual a":
           setData(dataSearchName.filter((el) => +el[search.column] === +search.value))
-         break;
+          break;
        default:
       } console.log(filters);
     }
 
     
     useEffect(()=>{
-        const filterColum = arrayColum.filter((e) => !information.some((el) => el.column === e ));
-        // console.log(filterColum);
-
-        setFilters(filterColum);
+      const filterColum = arrayColum.filter((e) => !information.some((el) => el.column === e ));
+      // console.log(filterColum);
+      setTest(data)
+      
+      setFilters(filterColum);
         setSearch((prev) => ({
           ...prev,
           // comparison: setArrayColum[0],
           column: filterColum[0],
+          // test: dataSearchName,
           // value: setArrayColum[0],
         }))
         
@@ -57,27 +65,30 @@ function Table(){
       
       
       const remove = ({target}) => {
+        requestAPIFetch().then((result) => setData(result))
         const removeFilter = information.filter((e) => e.column !== target.attributes.column.value);
         setInformation(removeFilter);
         const optioAplication = removeFilter.map((e) => e.column)
         setFilters(arrayColum.filter((e) => !optioAplication.includes(e)))
         // console.log(filters);
-        
+        // setInformation(filterInformations)
+        // filterInformations(dataSearchName)
+        setTest(dataSearchName)
+
       }
 
+
+
+      
      const removeAll = () => {
-      
-      // const allRemove = [];
-      // setInformation([]);
-      // filterInformations(data);
-      
-      
+      requestAPIFetch().then((result) => setData(result))
       setInformation([]);
-      setFilters(arrayColum.filter((e) => !data.includes(e)))
-      console.log((data.filter((e) => dataSearchName.includes(e))))
-      
+      setFilters(arrayColum.filter((e) => !test.includes(e)))
+      // const newA = [...data]
+      // console.log(newA);
+      setTest(data)
     
-      
+      // setTest(dataSearchName)
       // const test = data.map((e) => e.column)
       
       // console.log(information);
@@ -195,7 +206,7 @@ function Table(){
 
             <tbody>
       {
-        data.length === 0 ? <p>Nada Encontrado</p> :
+        test.length === 0 ? <p>Nada Encontrado</p> :
         dataSearchName.map((el) => (
           <tr key={ el.name } >
             <td>{el.name}</td>
