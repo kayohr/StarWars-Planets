@@ -4,9 +4,15 @@ import requestAPIFetch from '../../services/RequestAPI';
 
 
 function Table(){
-    const {data, setData, search, setSearch, filters, setFilters, arrayColum, setArrayColum} = useContext(PlanetsConxtet);
+    const {data, setData, search, setSearch, filters, setFilters, arrayColum} = useContext(PlanetsConxtet);
     const [information, setInformation] = useState([]);
     const [test, setTest] = useState({});
+    const [dataSearchName, setdataSearchName ] = useState([])
+    const [click, setClick] = useState(false)
+    const [sortOrder, setsortOrder] = useState({
+      column: 'population',
+      sort: 'ASC',
+    });
 
     // const searchName= () => {
     //   const dataSearchName = data.filter((el) => el.name.toUpperCase().includes(search.name?.toUpperCase()))
@@ -22,9 +28,11 @@ function Table(){
     }
     
     // console.log(data)
-    
-      const dataSearchName = data.filter((el) => el.name.toUpperCase().includes(search.name?.toUpperCase()))
+    // const dataSearchName = data.filter((el) => el.name.toUpperCase().includes(search.name?.toUpperCase()))
+    useEffect(() => {
+      setdataSearchName(data.filter((el) => el.name.toUpperCase().includes(search.name?.toUpperCase())))
 
+    },[search])
     
     
     const filterInformations = () => {
@@ -43,10 +51,10 @@ function Table(){
           setData(dataSearchName.filter((el) => +el[search.column] === +search.value))
           break;
        default:
-      } console.log(filters);
-    }
-
-    
+      } 
+      }
+      
+    // Atualiza as opções de filtro, select.
     useEffect(()=>{
       const filterColum = arrayColum.filter((e) => !information.some((el) => el.column === e ));
       // console.log(filterColum);
@@ -55,47 +63,95 @@ function Table(){
       setFilters(filterColum);
         setSearch((prev) => ({
           ...prev,
-          // comparison: setArrayColum[0],
           column: filterColum[0],
-          // test: dataSearchName,
-          // value: setArrayColum[0],
+         
         }))
         
       },[data])
       
       
       const remove = ({target}) => {
-        requestAPIFetch().then((result) => setData(result))
+        setClick(true)
+        // requestAPIFetch().then((result) => setData(result))
         const removeFilter = information.filter((e) => e.column !== target.attributes.column.value);
         setInformation(removeFilter);
         const optioAplication = removeFilter.map((e) => e.column)
         setFilters(arrayColum.filter((e) => !optioAplication.includes(e)))
         // console.log(filters);
         // setInformation(filterInformations)
-        // filterInformations(dataSearchName)
-        setTest(dataSearchName)
-
+        // filterInformations()
+        // setTest(dataSearchName)
+        information.forEach((e) => {
+          switch (e.comparison) {
+            case "maior que":
+             setData(data.filter((el) => +el[e.column] > +e.value))
+             // console.log('xablau');
+              break;
+              case "menor que":
+               setData(data.filter((el) => +el[e.column] < +e.value))
+               break;
+              case "igual a":
+               setData(data.filter((el) => +el[e.column] === +e.value))
+               break;
+            default:
+           } 
+        })
+        setdataSearchName(data)
       }
-
-
+      
+      
+      // useEffect(() => {
+      //   console.log(information);
+      //   setClick(false)
+      // },[click])
 
       
      const removeAll = () => {
       requestAPIFetch().then((result) => setData(result))
       setInformation([]);
       setFilters(arrayColum.filter((e) => !test.includes(e)))
-      // const newA = [...data]
-      // console.log(newA);
+      
       setTest(data)
     
-      // setTest(dataSearchName)
-      // const test = data.map((e) => e.column)
-      
-      // console.log(information);
     
      }
-    
-    
+
+     const sorted = () =>{
+      // setsortOrder(sortOrder.column)
+        
+      // const awesomeSort = (data, dir = 'ASC', key = null) => {
+      //   const firstElement = (key) ? data[0][key] : data[0];
+      //   const isNumber = !isNaN(firstElement);
+      //   const isAsc = dir.toUpperCase() === 'ASC';
+        
+      //   if(isNumber) {
+      //     return data.sort((a,b) => {
+      //       const x = (key) ? a[key] : a;
+      //       const y = (key) ? b[key] : b;
+      //       if(isAsc) return x - y;
+      //       if(!isAsc) return y - x;
+      //     })
+      //   } 
+      //   return search.sort((a,b) => {
+      //       const x = (key) ? a[key] : a;
+      //       const y = (key) ? b[key] : b;
+      //       if(isAsc) return x.localeCompare(y);
+      //       if(!isAsc) return y.localeCompare(x);
+      //     })
+        
+      // } }
+      
+      
+        const array = test.filter((el) => el[filters.column]);
+        
+        if (sortOrder.sort === 'ASC') {
+          array.sort((a, b) => (+a[sortOrder.column]) - (+b[sortOrder.column]));
+        } else {
+          array.sort((a, b) => (+b[sortOrder.column]) - (+a[sortOrder.column]));
+        }
+        setTest([...array])
+      };
+       
     return (
       <>
       <form>
@@ -153,7 +209,62 @@ function Table(){
         >Filter</button>
         </form>
       
+        
+
             <div>
+            <label htmlFor="column">
+          Coluna:
+          <select
+            data-testid="column-sort"
+            type="text"
+            // name="column"
+            // id="column"
+            value={ sortOrder}
+            // onChange={ ({ target }) => setsortOrder(target.value) }
+            onChange={ ({ target }) => setsortOrder(target.value) }
+          >
+            {filters.map((opt) => (
+              <option key={ opt } value={ opt }>{opt}</option>
+            ))}
+          </select>
+        </label>
+
+
+        <label htmlFor="ASC">
+          <input 
+          id="ASC"
+          type='radio'
+          data-testid='column-sort-input-asc'
+          value='ASC' 
+          checked={ sortOrder === 'ASC' }
+          // onChange={ () => setsortOrder('ASC')}
+          onChange={ ({ target }) => setsortOrder(target.value) }
+          />
+          
+          Ascendente
+          
+        </label>
+
+        <label htmlFor="DESC">
+          <input
+          id="DESC"
+          type='radio'
+          data-testid='column-sort-input-desc'
+          value='DESC'
+          checked={ sortOrder === 'DESC' }
+          // onChange={ () => setsortOrder('DESC')}
+          onChange={ ({ target }) => setsortOrder(target.value) }
+          />
+          Descendente
+          
+        </label>
+        <button
+        type="button"
+        data-testid='column-sort-button'
+        onClick={sorted}
+        >
+          Ordenar
+        </button>
               
              <div>
         {information.map((e) => (
@@ -209,7 +320,7 @@ function Table(){
         test.length === 0 ? <p>Nada Encontrado</p> :
         dataSearchName.map((el) => (
           <tr key={ el.name } >
-            <td>{el.name}</td>
+            <td data-testid="planet-name" >{el.name}</td>
           <td>{el.rotation_period}</td>
           <td>{el.orbital_period}</td>
           <td>{el.diameter}</td>

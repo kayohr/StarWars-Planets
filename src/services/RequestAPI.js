@@ -1,6 +1,6 @@
 const requestAPIFetch = async () => {
   try {
-    const url = 'https://swapi.dev/api/planets';
+    const url = 'https://swapi.py4e.com/api/planets';
     const response = await fetch(url);
     const data = await response.json();
     const { results } = data;
@@ -11,45 +11,6 @@ const requestAPIFetch = async () => {
     throw new Error(e.message);
   }
 };
-
-// // const axiosAPI = axios.create({
-// //   baseURL: 'https://swapi.dev/api/planets',
-// // });
-
-// // export const requestAPIAxios = async () => {
-// //   try {
-// //     const { data: { results } } = await axiosAPI.get('/character');
-// //     console.log('axios', results);
-// //     return results;
-// //   } catch (e) {
-// //     throw new Error(e.message);
-// //   }
-// // };
+// API ORIGINAL:'https://swapi.dev/api/planets'
 
 export default requestAPIFetch;
-
-// const requestAPIFetch = async () => {
-//   try {
-//     const response = await fetch('https://swapi.dev/api/residents/');
-//     const { results } = await response.json();
-//     return results;
-//   } catch (e) {
-//     throw new Error(e.message);
-//   }
-// };
-
-// const axiosAPI = axios.create({
-//   baseURL: 'https://swapi.dev/api/planets',
-// });
-
-// export const requestAPIAxios = async () => {
-//   try {
-//     const { data: { results } } = await axiosAPI.get('/residents');
-//     console.log('axios', results);
-//     return results;
-//   } catch (e) {
-//     throw new Error(e.message);
-//   }
-// };
-
-// export default requestAPIFetch;
