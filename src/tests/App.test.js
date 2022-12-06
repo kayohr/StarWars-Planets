@@ -403,4 +403,3 @@ userEvent.click(sortBtn)
   });
   });
 })
-

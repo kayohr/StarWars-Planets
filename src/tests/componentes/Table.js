@@ -1,14 +1,14 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import PlanetsConxtet from "../context/PlanetsContext";
-import requestAPIFetch from '../../services/RequestAPI';
 
 
 function Table(){
-    const {data, setData, search, setSearch, filters, setFilters, arrayColum} = useContext(PlanetsConxtet);
+    const {data, setData, search, setSearch, filters, setFilters, arrayColum, tablee,setArrayColum, setTablee} = useContext(PlanetsConxtet);
     const [information, setInformation] = useState([]);
     const [test, setTest] = useState({});
-    const [dataSearchName, setdataSearchName ] = useState([])
+    // const [dataSearchName, setdataSearchName ] = useState([])
     const [click, setClick] = useState(false)
+    // const [dataRender, setDataRender] = useState([])
     const [sortOrder, setsortOrder] = useState({
       column: 'population',
       sort: 'ASC',
@@ -29,128 +29,140 @@ function Table(){
     
     // console.log(data)
     // const dataSearchName = data.filter((el) => el.name.toUpperCase().includes(search.name?.toUpperCase()))
-    useEffect(() => {
-      setdataSearchName(data.filter((el) => el.name.toUpperCase().includes(search.name?.toUpperCase())))
+    // useEffect(() => {
+    //   setdataSearchName(data.filter((el) => el.name.toUpperCase().includes(search.name?.toUpperCase())))
 
-    },[search])
+    // },[])
     
-    
+    // const filterInformations = () => {
+    //   setInformation([...information, search])
+      
+    //   // setTest([...data])
+    //   switch (search.comparison) {
+    //    case "maior que":
+    //     setData(dataSearchName.filter((el) => +el[search.column] > +search.value))
+    //     // console.log('xablau');
+    //      break;
+    //      case "menor que":
+    //       setData(dataSearchName.filter((el) => +el[search.column] < +search.value))
+    //       break;
+    //      case "igual a":
+    //       setData(dataSearchName.filter((el) => +el[search.column] === +search.value))
+    //       break;
+    //    default:
+    //   } 
+      
+    //   }
     const filterInformations = () => {
-      setInformation([...information, search])
-      
-      // setTest([...data])
-      switch (search.comparison) {
-       case "maior que":
-        setData(dataSearchName.filter((el) => +el[search.column] > +search.value))
-        // console.log('xablau');
-         break;
-         case "menor que":
-          setData(dataSearchName.filter((el) => +el[search.column] < +search.value))
-          break;
-         case "igual a":
-          setData(dataSearchName.filter((el) => +el[search.column] === +search.value))
-          break;
-       default:
-      } 
-      }
-      
+      const dataSearchName = data.filter((e) => e.name.toUpperCase()
+        .includes(search.name.toUpperCase()));
+      const finalFilter = dataSearchName.filter((e) => {
+        const filterResults = filters.map(({ column, comparison, value }) => {
+          switch (comparison) {
+          case 'menor que':
+            return +e[column] < +value;
+          case 'igual a':
+            return +e[column] === +value;
+          case 'maior que':
+            return +e[column] > +value;
+          default:
+            return true;
+          }
+        });
+        return filterResults.every((_planet) => _planet);
+      });
+      return finalFilter;
+    };
+    
+    const submitFilters = () => {
+      setArrayColum(arrayColum.filter((e) => e !== search.column));
+      setFilters([...filters,
+        { column: search.column,
+          comparison: search.comparison,
+          value: search.value }]);
+      setSearch({
+        ...search,
+        column: arrayColum[0],
+      });
+    };
     // Atualiza as opções de filtro, select.
-    useEffect(()=>{
-      const filterColum = arrayColum.filter((e) => !information.some((el) => el.column === e ));
-      // console.log(filterColum);
-      setTest(data)
-      
-      setFilters(filterColum);
-        setSearch((prev) => ({
-          ...prev,
-          column: filterColum[0],
+    // useEffect(()=>{
+    //   const filterColum = arrayColum.filter((e) => !information.some((el) => el.column === e ));
+    //   // console.log(filterColum);
+    //   setTest(data)
+    //   // setTablee(data)
+    //   setFilters(filterColum);
+    //     setSearch((prev) => ({
+    //       ...prev,
+    //       column: filterColum[0],
+
          
-        }))
+    //     }))
         
-      },[data])
+    //   },[data])
       
-      
-      const remove = ({target}) => {
-        setClick(true)
-        // requestAPIFetch().then((result) => setData(result))
-        const removeFilter = information.filter((e) => e.column !== target.attributes.column.value);
-        setInformation(removeFilter);
-        const optioAplication = removeFilter.map((e) => e.column)
-        setFilters(arrayColum.filter((e) => !optioAplication.includes(e)))
-        // console.log(filters);
-        // setInformation(filterInformations)
-        // filterInformations()
-        // setTest(dataSearchName)
-        information.forEach((e) => {
-          switch (e.comparison) {
-            case "maior que":
-             setData(data.filter((el) => +el[e.column] > +e.value))
-             // console.log('xablau');
-              break;
-              case "menor que":
-               setData(data.filter((el) => +el[e.column] < +e.value))
-               break;
-              case "igual a":
-               setData(data.filter((el) => +el[e.column] === +e.value))
-               break;
-            default:
-           } 
-        })
-        setdataSearchName(data)
+      console.log(filters);
+      // const remove = ({target}) => {
+      //   // setClick(true)
+      // //  const tablee = await requestAPIFetch()
+      //   const removeFilter = information.filter((e) => e.column !== target.attributes.column.value);
+      //   setInformation(removeFilter);
+      //   const optioAplication = removeFilter.map((e) => e.column)
+      //   setFilters(arrayColum.filter((e) => !optioAplication.includes(e)))
+      //   // console.log(filters);
+      //   // setInformation(filterInformations)
+      //   // filterInformations()
+      //   // setTest(dataSearchName)
+      //   // setTablee(data)
+        
+      //   // information.forEach((e) => {
+      //   //   switch (e.comparison) {
+      //   //     case "maior que":
+      //   //       setData(tablee.filter((el) => +el[e.column] > +e.value))
+      //   //      // console.log('xablau');
+      //   //       break;
+      //   //       case "menor que":
+      //   //         setData(tablee.filter((el) => +el[e.column] < +e.value))
+      //   //        break;
+      //   //       case "igual a":
+      //   //         setData(tablee.filter((el) => +el[e.column] === +e.value))
+      //   //        break;
+      //   //     default:
+      //   //    } 
+      //   // })
+        
+      // }
+      const remove = (event) => {
+        setFilters(filters.filter((e)=> e.column !== event.target.value))
       }
-      
       
       // useEffect(() => {
-      //   console.log(information);
-      //   setClick(false)
-      // },[click])
+      //   setTablee(data)
+      //   // setClick(false)
+      // },[tablee])
 
       
      const removeAll = () => {
-      requestAPIFetch().then((result) => setData(result))
-      setInformation([]);
-      setFilters(arrayColum.filter((e) => !test.includes(e)))
-      
-      setTest(data)
+      setFilters([])
     
-    
+
      }
 
-     const sorted = () =>{
-      // setsortOrder(sortOrder.column)
-        
-      // const awesomeSort = (data, dir = 'ASC', key = null) => {
-      //   const firstElement = (key) ? data[0][key] : data[0];
-      //   const isNumber = !isNaN(firstElement);
-      //   const isAsc = dir.toUpperCase() === 'ASC';
-        
-      //   if(isNumber) {
-      //     return data.sort((a,b) => {
-      //       const x = (key) ? a[key] : a;
-      //       const y = (key) ? b[key] : b;
-      //       if(isAsc) return x - y;
-      //       if(!isAsc) return y - x;
-      //     })
-      //   } 
-      //   return search.sort((a,b) => {
-      //       const x = (key) ? a[key] : a;
-      //       const y = (key) ? b[key] : b;
-      //       if(isAsc) return x.localeCompare(y);
-      //       if(!isAsc) return y.localeCompare(x);
-      //     })
-        
-      // } }
+    //  const sorted = () =>{
       
       
-        const array = test.filter((el) => el[filters.column]);
+    //     // const array = data.filter((el) => el[sortOrder.column]);
+    //     // console.log(array);
         
-        if (sortOrder.sort === 'ASC') {
-          array.sort((a, b) => (+a[sortOrder.column]) - (+b[sortOrder.column]));
-        } else {
-          array.sort((a, b) => (+b[sortOrder.column]) - (+a[sortOrder.column]));
-        }
-        setTest([...array])
-      };
+    //     // if (sortOrder.sort === 'ASC') {
+    //     //   array.sort((a, b) => (+a[sortOrder.column]) - (+b[sortOrder.column]));
+    //     // } else {
+    //     //   array.sort((a, b) => (+b[sortOrder.column]) - (+a[sortOrder.column]));
+    //     // }
+    //     // setInformation(array)
+    //     // setData(array)
+    //     // setsortOrder(array)
+    //   };
        
     return (
       <>
@@ -172,7 +184,7 @@ function Table(){
       name="column"
       onChange={ handleChange }>
       { 
-      filters.map((e) => ( 
+      arrayColum.map((e) => ( 
         <option key= {e} value= {e}>
           {e}
         </option>
@@ -202,7 +214,7 @@ function Table(){
         <button
         data-testid='button-filter'
         type="button"
-        onClick={filterInformations}
+        onClick={submitFilters}
         // onChange={ ({ target }) => target.value !== ''
         //     && setInformation([...arrayColum, target.value]) }
 
@@ -213,7 +225,7 @@ function Table(){
 
             <div>
             <label htmlFor="column">
-          Coluna:
+          {/* Coluna:
           <select
             data-testid="column-sort"
             type="text"
@@ -226,19 +238,19 @@ function Table(){
             {filters.map((opt) => (
               <option key={ opt } value={ opt }>{opt}</option>
             ))}
-          </select>
+          </select> */}
         </label>
 
 
         <label htmlFor="ASC">
-          <input 
+          {/* <input 
           id="ASC"
           type='radio'
           data-testid='column-sort-input-asc'
           value='ASC' 
-          checked={ sortOrder === 'ASC' }
+          checked={ sortOrder.sort === 'ASC' }
           // onChange={ () => setsortOrder('ASC')}
-          onChange={ ({ target }) => setsortOrder(target.value) }
+          // onChange={ ({ target }) => setsortOrder(target.value) }
           />
           
           Ascendente
@@ -251,23 +263,23 @@ function Table(){
           type='radio'
           data-testid='column-sort-input-desc'
           value='DESC'
-          checked={ sortOrder === 'DESC' }
+          checked={ sortOrder.sort === 'DESC' }
           // onChange={ () => setsortOrder('DESC')}
-          onChange={ ({ target }) => setsortOrder(target.value) }
+          // onChange={ ({ target }) => setsortOrder({column: }) }
           />
-          Descendente
+          Descendente */}
           
         </label>
         <button
         type="button"
         data-testid='column-sort-button'
-        onClick={sorted}
+        // onClick={sorted}
         >
           Ordenar
         </button>
               
              <div>
-        {information.map((e) => (
+        {filters.map((e) => (
           <div data-testid="filter" key={ e.column }>
             <span>
               {e.column} {e.comparison} {e.value}
@@ -276,7 +288,8 @@ function Table(){
             <button
             onClick={remove}
             type='button'
-            column={e.column}
+            
+            value={e.column}
             
             >
               X
@@ -318,7 +331,7 @@ function Table(){
             <tbody>
       {
         test.length === 0 ? <p>Nada Encontrado</p> :
-        dataSearchName.map((el) => (
+        filterInformations().map((el) => (
           <tr key={ el.name } >
             <td data-testid="planet-name" >{el.name}</td>
           <td>{el.rotation_period}</td>

@@ -5,6 +5,7 @@ import requestAPIFetch from '../../services/RequestAPI';
 export default function PlanetsProvider({children}){
   const [data, setData] = useState([]);
   const [filters, setFilters] = useState([]);
+  const [tablee, setTablee] = useState([])
   const [search, setSearch] = useState({
     name: '',
     comparison: 'maior que',
@@ -22,6 +23,7 @@ export default function PlanetsProvider({children}){
 
  useEffect(() => {
     requestAPIFetch().then((result) => setData(result))
+    .then((result) => setTablee(result))
  }, [search.name])
 
  const value = useMemo(() => ({
@@ -29,11 +31,13 @@ export default function PlanetsProvider({children}){
     filters,
     search,
     arrayColum,
+    tablee,
     setFilters,
     setData,
     setSearch,
     setArrayColum,
- }), [data, filters,search, arrayColum, setFilters, setData,setSearch, setArrayColum])
+    setTablee,
+ }), [data, filters,search, arrayColum, tablee, setArrayColum, setTablee, setFilters, setData,setSearch, setArrayColum])
 
     return (
         <PlanetsConxtet.Provider value={value}>
