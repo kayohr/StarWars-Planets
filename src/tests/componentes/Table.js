@@ -63,10 +63,10 @@ function Table(){
             return +e[column] < +value;
           case 'igual a':
             return +e[column] === +value;
-          case 'maior que':
-            return +e[column] > +value;
+          // case 'maior que':
+          //   return +e[column] > +value;
           default:
-            return true;
+            return +e[column] > +value;
           }
         });
         return filterResults.every((_planet) => _planet);
@@ -101,7 +101,6 @@ function Table(){
         
     //   },[data])
       
-      console.log(filters);
       // const remove = ({target}) => {
       //   // setClick(true)
       // //  const tablee = await requestAPIFetch()
@@ -151,17 +150,16 @@ function Table(){
     //  const sorted = () =>{
       
       
-    //     // const array = data.filter((el) => el[sortOrder.column]);
-    //     // console.log(array);
+    //     const array = data.filter((el) => el[sortOrder.column]);
+    //     console.log(array);
         
-    //     // if (sortOrder.sort === 'ASC') {
-    //     //   array.sort((a, b) => (+a[sortOrder.column]) - (+b[sortOrder.column]));
-    //     // } else {
-    //     //   array.sort((a, b) => (+b[sortOrder.column]) - (+a[sortOrder.column]));
-    //     // }
+    //     if (sortOrder.sort === 'ASC') {
+    //       array.sort((a, b) => (+a[sortOrder.column]) - (+b[sortOrder.column]));
+    //     } else {
+    //       array.sort((a, b) => (+b[sortOrder.column]) - (+a[sortOrder.column]));
+    //     }
     //     // setInformation(array)
-    //     // setData(array)
-    //     // setsortOrder(array)
+    //     setData(array)
     //   };
        
     return (
@@ -224,8 +222,8 @@ function Table(){
         
 
             <div>
-            <label htmlFor="column">
-          {/* Coluna:
+            {/* <label htmlFor="column">
+          Coluna:
           <select
             data-testid="column-sort"
             type="text"
@@ -235,23 +233,23 @@ function Table(){
             // onChange={ ({ target }) => setsortOrder(target.value) }
             onChange={ ({ target }) => setsortOrder(target.value) }
           >
-            {filters.map((opt) => (
+            {arrayColum.map((opt) => (
               <option key={ opt } value={ opt }>{opt}</option>
             ))}
-          </select> */}
+          </select>
         </label>
 
 
         <label htmlFor="ASC">
-          {/* <input 
+           <input 
           id="ASC"
           type='radio'
           data-testid='column-sort-input-asc'
           value='ASC' 
           checked={ sortOrder.sort === 'ASC' }
           // onChange={ () => setsortOrder('ASC')}
-          // onChange={ ({ target }) => setsortOrder(target.value) }
-          />
+          onChange={ ({ target }) => setsortOrder({column: search.column})  }
+          /> 
           
           Ascendente
           
@@ -265,18 +263,18 @@ function Table(){
           value='DESC'
           checked={ sortOrder.sort === 'DESC' }
           // onChange={ () => setsortOrder('DESC')}
-          // onChange={ ({ target }) => setsortOrder({column: }) }
+          onChange={ ({ target }) => setsortOrder({column: search.column}) }
           />
-          Descendente */}
+          Descendente 
           
-        </label>
-        <button
+        </label> */}
+        {/* <button
         type="button"
         data-testid='column-sort-button'
-        // onClick={sorted}
+        onClick={sorted}
         >
           Ordenar
-        </button>
+        </button> */}
               
              <div>
         {filters.map((e) => (

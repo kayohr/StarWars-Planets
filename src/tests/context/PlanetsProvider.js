@@ -23,7 +23,7 @@ export default function PlanetsProvider({children}){
 
  useEffect(() => {
     requestAPIFetch().then((result) => setData(result))
-    .then((result) => setTablee(result))
+    
  }, [search.name])
 
  const value = useMemo(() => ({

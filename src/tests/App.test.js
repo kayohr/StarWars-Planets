@@ -1,405 +1,179 @@
-import React from 'react';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import App from '../App';
-import mocks from './Mock'
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import testando from './testando'
+import React from 'react';
+import App from '../App';
+import mocks from './Mock';
+import renderWithContext from './renderWithContext';
 
-// beforeEach(() => {
-//   jest.spyOn(global, "fetch");
-//   global.fetch.mockResolvedValue({
-//     json: jest.fn().mockResolvedValue(mocks),
-//   });
-// })
-// it("Testa a chamada da API", () => {
-//   testando(<App />);
-//   expect(global.fetch).toHaveBeenCalled();
-// });
 
-// test('I am your test', () => {
-//   render(<App />);
-//   const linkElement = screen.getByText(/Hello, App!/i);
-//   expect(linkElement).toBeInTheDocument();
-// });
 describe(' Render', () => {
+
+  
+  global.fetch = (url) => {
+    return Promise.resolve({
+    json: () => Promise.resolve(mocks)
+    })
+    } 
+
   test('', async () => {
 
+
+renderWithContext(<App />);
+
+const table = screen.getByRole('table')
+expect(table).toBeVisible()
+expect(table).toBeDefined()
+const planetName = await screen.findAllByTestId('planet-name');
+expect(planetName).toHaveLength(10);
+
+expect(screen.findByRole('cell', {  name: /tatooine/i}))
+expect(screen.findByRole('cell', { name: /alderaan/i }))
+expect(screen.findByRole('cell', {  name:  /yavin iv/i}))
+expect(screen.findByRole('cell', {  name: /hoth/i}))
+expect(screen.findByRole('cell', {  name: /Dagobah/i}))
+expect(screen.findByRole('cell', {  name: /Bespin/i}))
+expect(screen.findByRole('cell', {  name: /Endor/i}))
+expect(screen.findByRole('cell', {  name: /Naboo/i}))
+expect(screen.findByRole('cell', {  name: /Coruscant/i}))
+expect(screen.findByRole('cell', {  name: /Kamino/i}))
+const nameInput = screen.getByTestId('name-filter');
+expect(nameInput).toBeInTheDocument();     
+const columnFilterID = screen.getByTestId('column-filter')
+expect(columnFilterID).toBeEnabled();
+const comparisonDataId = screen.getByTestId('comparison-filter')
+expect(comparisonDataId).toBeEnabled();
+const valueDataId = screen.getByTestId('value-filter')
+expect(valueDataId).toBeEnabled();
+const planetYavin = await screen.findByText(/Yavin IV/i);
+expect(planetYavin).toBeVisible();
+userEvent.selectOptions(columnFilterID, 'population');
+userEvent.selectOptions(comparisonDataId, 'maior que');
+fireEvent.change(valueDataId, { target: { value: 30000000 } });
+const btnFilterDataId = screen.getByTestId('button-filter');
+expect(btnFilterDataId).toBeEnabled();
+
+userEvent.click(btnFilterDataId);
+expect(planetYavin).not.toBeVisible();
+userEvent.selectOptions(columnFilterID, 'orbital_period');
+userEvent.selectOptions(comparisonDataId, 'igual a');
+fireEvent.change(valueDataId, { target: { value: 4818 } });
+userEvent.click(btnFilterDataId);
+userEvent.selectOptions(columnFilterID, 'rotation_period');
+userEvent.selectOptions(comparisonDataId, 'maior que');
+fireEvent.change(valueDataId, { target: { value: 17 } });
+userEvent.click(btnFilterDataId);
+const removeBtnX = screen.getAllByRole('button', { name: /x/i });
+userEvent.click(removeBtnX[0]);
+userEvent.selectOptions(columnFilterID, 'diameter');
+userEvent.type(columnFilterID, 'rotation_period');
+userEvent.selectOptions(comparisonDataId, 'menor que');
+userEvent.type(valueDataId, '24');
+userEvent.click(btnFilterDataId);
+userEvent.selectOptions(comparisonDataId, 'menor que');
+fireEvent.change(valueDataId, { target: { value: 10200 } });
+userEvent.click(btnFilterDataId);
+expect(planetYavin).not.toBeVisible();
+userEvent.click(btnFilterDataId);
+expect(planetYavin).toBeDefined();
+const btnAllDataId = screen.getByRole('button', {name: /all remove/i})
+
+   expect(btnAllDataId).toBeVisible()
+ expect(btnAllDataId).toBeEnabled()
+ 
+ const select = screen.findByTestId('column-filter');
+ expect((await select).children).toHaveLength(0)
+ 
+ await waitFor(() =>{
+   
+   userEvent.type( screen.findByRole("option", { name: /population/i}))
+  userEvent.type( screen.findByRole("option", { name: /orbital_period/i}))
+  userEvent.type( screen.findByRole("option", { name: /diameter/i}))
+  userEvent.type( screen.findByRole("option", { name: /rotation_period/i}))
+  userEvent.type( screen.findByRole("option", { name: /surface_water/i}))
+  
+  userEvent.type( screen.findByRole("option", { name: /maior que/i}))
+  userEvent.type( screen.findByRole("option", { name: /menor que/i}))
+  userEvent.type( screen.findByRole("option", { name: /igual a/i}))
+
+
+  })
+})
+
+describe(' renderWithContext', () => {
+
+  
+  global.fetch = (url) => {
+    return Promise.resolve({
+    json: () => Promise.resolve(mocks)
+    })
+    } 
+
+  test('', async () => {
+
+renderWithContext(<App />);
+
+const nameBtn = screen.getByRole('button', {  name: /filter/i})
+   expect(nameBtn).not.toBeDisabled();
+   expect(nameBtn).toBeInTheDocument()
+   expect(nameBtn).toBeVisible()
+   userEvent.click(nameBtn)
+   expect(screen.getByRole("button", { name: /filter/i })).not.toBeDisabled()
+   const diameterMaior = screen.findByText(/diameter maior que 0/i)
+   expect(diameterMaior).toBeDefined()
+   userEvent.type(diameterMaior,( { target: { value: 1000 }}))
+   const columnFIlter = screen.getByTestId('column-filter')
+   expect(columnFIlter).toHaveLength(4)
+   userEvent.type(screen.findByRole('button', {  name: /x/i}))
+   expect(columnFIlter).toHaveLength(4)
+   expect(screen.findByText(/4 Results/i)).toBeDefined()
+   userEvent.click(nameBtn)
+   userEvent.click(nameBtn)
+   expect(columnFIlter).toHaveLength(3)
+   userEvent.click(screen.getByRole('button', {  name: /all remove/i}))
+   expect(screen.findByText(/population maior que 0/i)).toBeDefined()
+   expect(columnFIlter).toHaveLength(3)
+   const columnHead = screen.getByRole('columnheader', {  name: /name/i})
+   expect(columnHead).toBeDefined()
+   userEvent.type(screen.findByText(/population maior que 0/i))
+   expect(nameBtn).not.toBeDisabled();
+   expect(nameBtn).toBeInTheDocument()
+   expect(screen.findByRole("option", { name: "population"})).toBeDefined();
+  })
+  })
+
+  describe(' renderWithContext', () => {
+
+  
     global.fetch = (url) => {
       return Promise.resolve({
       json: () => Promise.resolve(mocks)
       })
       } 
-
-// jest.spyOn(global, 'fetch');
-// global.fetch.mockResolvedValue({ json: jest.fn().mockResolvedValue(mocks) });
-
-testando(<App />);
-
-const table = screen.getByRole('table')
-expect(table).toBeVisible()
-expect(table).toBeDefined()
-const searchInput = screen.queryByText('Endor');
-expect(searchInput).toBeDefined();
-userEvent.type(searchInput, 'Endor');
-
-const nameDataId = screen.getByTestId('name-filter');
-expect(nameDataId).toBeInTheDocument();
-expect(nameDataId).toBeEnabled();
-
-const nameSearchBar = screen.getByPlaceholderText(/search bar/i);
-expect(nameSearchBar).toBeInTheDocument();
-
-const columnDataId = screen.getByTestId('column-filter');
-expect(columnDataId).toBeInTheDocument();
-expect(columnDataId).toBeEnabled();
-
-const comparisonDataId = screen.getByTestId('comparison-filter');
-expect(comparisonDataId).toBeInTheDocument();
-expect(comparisonDataId).toBeEnabled();
-
-const valueDataId = screen.getByTestId('value-filter');
-expect(valueDataId).toBeInTheDocument();
-expect(valueDataId).toBeEnabled();
-
-const valueFilter = screen.getByPlaceholderText(/value filter/i);
-expect(valueFilter).toBeInTheDocument();
-
-const btnFilterDataId = screen.getByTestId('button-filter');
-expect(btnFilterDataId).toBeInTheDocument();
-expect(btnFilterDataId).toBeEnabled();
-expect(btnFilterDataId).toBeValid()
-  expect(btnFilterDataId).toBeVisible()
-
-const btnAllDataId = screen.getByTestId('button-remove-filters');
-expect(btnAllDataId).toBeInTheDocument();
-expect(btnAllDataId).toBeEnabled();
-expect(btnAllDataId).toBeValid();
-  expect(btnAllDataId).toBeVisible()
-
-
-const allRemove = screen.getByRole('button', {name: /all remove/i});
-  expect(allRemove).toBeInTheDocument()
-  expect(allRemove).toBeValid()
-  expect(allRemove).toBeVisible()
-
-  const nothingFound = screen.getByText(/nada encontrado/i);
-  expect(nothingFound).toBeInTheDocument()
-  expect(nothingFound).toBeVisible()
-  expect(nothingFound).not.toBeInvalid()
-
-  const btnName = screen.getByRole('button', {name: /filter/i});
-  expect(btnName).toBeInTheDocument()
-  expect(btnName).toBeValid()
-  expect(btnName).toBeVisible()
-
-  expect(screen.getAllByRole("columnheader")).toHaveLength(13);
-
-
-  const tatooine = screen.queryByText(/Tatooine/i);
-  expect(tatooine).toBeDefined();
-
-  const kamino =  screen.queryByText(/kamino/i);
-  expect(kamino).toBeDefined();  
   
-
+    test('', async () => {
   
-  await waitFor(() => {
-  userEvent.selectOptions(comparisonDataId, 'maior que');
-  userEvent.selectOptions(comparisonDataId, 'menor que');
-  userEvent.selectOptions(comparisonDataId, 'igual a');
-  
-  userEvent.selectOptions(columnDataId, 'orbital_period');
-  userEvent.selectOptions(columnDataId, 'diameter');
-  userEvent.selectOptions(columnDataId, 'rotation_period');
-  userEvent.selectOptions(columnDataId, 'surface_water');
-  userEvent.click(btnFilterDataId)
-  
-  userEvent.click(btnAllDataId);
-  userEvent.click(nameDataId, /search bar/i);
-  userEvent.type(valueFilter, '40');
-    userEvent.type(tatooine)
-    userEvent.type(kamino)
+  renderWithContext(<App />);
 
-  userEvent.click(btnFilterDataId, 'orbital_period');
-  userEvent.click(btnFilterDataId, 'diameter');
-  userEvent.click(btnFilterDataId, 'rotation_period');
-  userEvent.click(btnFilterDataId, 'surface_water');
-
-
-  userEvent.clear(valueFilter)
-  userEvent.click(columnDataId, 'orbital_period');
-  userEvent.click(columnDataId, 'diameter');
-  userEvent.click(columnDataId, 'rotation_period');
-  userEvent.click(columnDataId, 'surface_water');
-  userEvent.click(comparisonDataId, 'maior que');
-  userEvent.click(comparisonDataId, 'menor que');
-  userEvent.click(comparisonDataId, 'igual a');
-
-
-  
-  });
-})
-
-describe('Informações da table ', () => {
-  it('', async () => {
- global.fetch = (url) => {
-      return Promise.resolve({
-      json: () => Promise.resolve(mocks)
-      })
-      } 
-
-testando(<App />);
-const ColumnName = screen.getByRole('columnheader', { name: /name/i })
-expect(ColumnName).toBeInTheDocument();
-  expect(ColumnName).toBeVisible()
-const columnRotation = screen.getByRole('columnheader', {name: /rotation period/i})
-  expect(columnRotation).toBeVisible()
-expect(columnRotation).toBeInTheDocument();
-const columnOrbital = screen.getByRole('columnheader', {name: /orbital period/i})
-  expect(columnOrbital).toBeVisible()
-expect(columnOrbital).toBeInTheDocument();
-const columnDiameter = screen.getByRole('columnheader', {name: /diameter/i})
-  expect(columnDiameter).toBeVisible()
-expect(columnDiameter).toBeInTheDocument();
-const columnClimate = screen.getByRole('columnheader', {name: /climate/i})
-  expect(columnClimate).toBeVisible()
-expect(columnClimate).toBeInTheDocument();
-
-const columnGravity = screen.getByRole('columnheader', {name: /gravity/i})
-  expect(columnGravity).toBeVisible()
-expect(columnGravity).toBeInTheDocument();
-const columnTerrain = screen.getByRole('columnheader', {name: /terrain/i})
-  expect(columnTerrain).toBeVisible()
-expect(columnTerrain).toBeInTheDocument();
-const columnSurface = screen.getByRole('columnheader', {name: /Surface Wate/i})
-  expect(columnSurface).toBeVisible()
-expect(columnSurface).toBeInTheDocument();
-const columnPopulation = screen.getByRole('columnheader', {name: /Population/i})
-  expect(columnPopulation).toBeVisible()
-expect(columnPopulation).toBeInTheDocument();
-const columnFilms = screen.getByRole('columnheader', {name: /Films/i})
-  expect(columnFilms).toBeVisible()
-expect(columnFilms).toBeInTheDocument();
-const columnCreated = screen.getByRole('columnheader', {name: /Created/i})
-  expect(columnCreated).toBeVisible()
-expect(columnCreated).toBeInTheDocument();
-const columnEdited = screen.getByRole('columnheader', {name: /Edited/i})
-  expect(columnEdited).toBeVisible()
-expect(columnEdited).toBeInTheDocument();
-const columnurl = screen.getByRole('columnheader', {name: /url/i})
-  expect(columnurl).toBeVisible()
-expect(columnurl).toBeInTheDocument();
-const nothingFound = screen.getByText(/nada encontrado/i)
-  expect(nothingFound).toBeVisible()
-expect(nothingFound).toBeInTheDocument()
-const btnFilter = screen.getByRole('button', {name: /filter/i})
-  expect(btnFilter).toBeVisible()
-expect(btnFilter).toBeEnabled()
-const btnAllRemove = screen.getByRole('button', {name: /all remove/i})
-  expect(btnAllRemove).toBeVisible()
-expect(btnAllRemove).toBeEnabled()
-
-
-await waitFor(() => {
-
- 
-    })
-  });
-})
-
-describe(' Filtros de coluna maior que', () => {
-  it('', async () => {
- global.fetch = (url) => {
-      return Promise.resolve({
-      json: () => Promise.resolve(mocks)
-      })
-      } 
-
-testando(<App />);
-
-
-  const btnFilterDataId = screen.getByTestId('button-filter');
-  expect(btnFilterDataId).toBeInTheDocument();
-  expect(btnFilterDataId).toBeEnabled();
-  expect(btnFilterDataId).toBeValid()
-  expect(btnFilterDataId).toBeVisible()
-
-const populationMaiorQ = screen.queryByText(/population maior que 0/i)
-expect(populationMaiorQ).toBeDefined()
-// const columnDataId = screen.getByTestId('column-filter');
-// expect(columnDataId).toBeInTheDocument();
-
-const orbitalMaiorQ = screen.queryByText(/orbital_period maior que 0/i)
-expect(orbitalMaiorQ).toBeDefined()
-
-const diameterMaiorQ = screen.queryByText(/diameter maior que 0/i)
-expect(diameterMaiorQ).toBeDefined()
-
-const rotationMaiorQ = screen.queryByText(/rotation_period maior que 0/i)
-expect(rotationMaiorQ).toBeDefined()
-
-const surfaceMaiorQ = screen.queryByText(/surface_water maior que 0/i)
-expect(surfaceMaiorQ).toBeDefined()
-
-const btnAllDataId = screen.getByTestId('button-remove-filters');
-expect(btnAllDataId).toBeInTheDocument();
-expect(btnAllDataId).toBeEnabled();
-expect(btnAllDataId).toBeValid();
-  expect(btnAllDataId).toBeVisible()
-
-  await waitFor(() => { 
-userEvent.click(btnFilterDataId, /population maior que 0/i);
-userEvent.click(btnFilterDataId, /orbital_period maior que 0/i);
-userEvent.click(btnFilterDataId, /rotation_period maior que 0/i);
-userEvent.click(btnFilterDataId, /surface_water maior que 0/i);
-
-  userEvent.click(btnAllDataId, /population maior que 0/i);
-  userEvent.click(btnAllDataId, /orbital_period maior que 0/i);
-  userEvent.click(btnAllDataId,  /rotation_period maior que 0/i);
-  userEvent.click(btnAllDataId, /surface_water maior que 0/i);
-
-
-// await waitFor(() => {
-// userEvent.click(columnDataId, 'orbital_period');
-// userEvent.selectOptions(columnDataId, 'diameter');
-// userEvent.selectOptions(columnDataId, 'rotation_period');
-// userEvent.selectOptions(columnDataId, 'surface_water');
-//   });
-})
-}) })
-
-describe('Filtros de coluna menor que ', () => {
-  it('', async () => {
- global.fetch = (url) => {
-      return Promise.resolve({
-      json: () => Promise.resolve(mocks)
-      })
-      } 
-
-testando(<App />);
-
- 
-
-  const btnFilterDataId = screen.getByTestId('button-filter');
-  expect(btnFilterDataId).toBeInTheDocument();
-  expect(btnFilterDataId).toBeEnabled();
-  expect(btnFilterDataId).toBeValid()
-  expect(btnFilterDataId).toBeVisible()
-
-const populationMenorQ = screen.queryByText(/population menor que 0/i)
-expect(populationMenorQ).toBeDefined()
-
-const orbitalMenorQ = screen.queryByText(/orbital_period menor que 0/i)
-expect(orbitalMenorQ).toBeDefined()
-
-const diameterMenorQ = screen.queryByText(/diameter menor que 0/i)
-expect(diameterMenorQ).toBeDefined()
-
-const rotationMenorQ = screen.queryByText(/rotation_period menor que 0/i)
-expect(rotationMenorQ).toBeDefined()
-
-const surfaceMenorQ = screen.queryByText(/surface_water menor que 0/i)
-expect(surfaceMenorQ).toBeDefined()
-
-const btnAllDataId = screen.getByTestId('button-remove-filters');
-expect(btnAllDataId).toBeInTheDocument();
-expect(btnAllDataId).toBeEnabled();
-expect(btnAllDataId).toBeValid();
-  expect(btnAllDataId).toBeVisible()
-
-  await waitFor(() => {
-userEvent.click(btnFilterDataId, /population menor que 0/i);
-userEvent.click(btnFilterDataId, /orbital_period menor que 0/i);
-userEvent.click(btnFilterDataId, /rotation_period menor que 0/i);
-userEvent.click(btnFilterDataId, /surface_water menor que 0/i);
-
-userEvent.click(btnAllDataId, /population menor que 0/i);
-userEvent.click(btnAllDataId, /orbital_period menor que 0/i);
-userEvent.click(btnAllDataId,  /rotation_period menor que 0/i);
-userEvent.click(btnAllDataId, /surface_water menor que 0/i);
-  });
-})})
-
-describe('Filtros de coluna igual a ', () => {
-  it('', async () => {
- global.fetch = (url) => {
-      return Promise.resolve({
-      json: () => Promise.resolve(mocks)
-      })
-      } 
-
-testando(<App />);
-
-  const btnFilterDataId = screen.getByTestId('button-filter');
-  expect(btnFilterDataId).toBeInTheDocument();
-  expect(btnFilterDataId).toBeEnabled();
-  expect(btnFilterDataId).toBeValid()
-  expect(btnFilterDataId).toBeVisible()
-// const populationIgualA = screen.findByText(/population igual a 0/i)
-expect( screen.queryByText( /population igual a 0/i)).toBeDefined()
-
-const orbitalIgualA = screen.queryByText(/orbital_period igual a 0/i)
-expect(orbitalIgualA).toBeDefined()
-
-const diameterIgualA = screen.queryByText(/diameter igual a 0/i)
-expect(diameterIgualA).toBeDefined()
-
-const rotationIgualA = screen.queryByText(/rotation_period igual a 0/i)
-expect(rotationIgualA).toBeDefined()
-
-const surfaceIgualA = screen.queryByText(/surface_water igual a 0/i)
-expect(surfaceIgualA).toBeDefined()
-
-
-const btnAllDataId = screen.getByTestId('button-remove-filters');
-expect(btnAllDataId).toBeInTheDocument();
-expect(btnAllDataId).toBeEnabled();
-expect(btnAllDataId).toBeValid();
-  expect(btnAllDataId).toBeVisible()
-
-  await waitFor(() => { 
-
-userEvent.click(btnFilterDataId, /population igual que 0/i);
-userEvent.click(btnFilterDataId, /orbital_period igual que 0/i);
-userEvent.click(btnFilterDataId, /rotation_period igual que 0/i);
-userEvent.click(btnFilterDataId, /surface_water igual que 0/i);
-
-userEvent.click(btnAllDataId, /population igual que 0/i);
-userEvent.click(btnAllDataId, /orbital_period igual que 0/i);
-userEvent.click(btnAllDataId,  /rotation_period igual que 0/i);
-userEvent.click(btnAllDataId, /surface_water igual que 0/i);
-
-  });})
-})
-
-
-
-describe(' ', () => {
-  it('', async () => {
-
-
-testando(<App />);
-const columnSort =  screen.getByTestId('column-sort');
-expect(columnSort).toBeInTheDocument();
-const columnAsc = screen.getByTestId('column-sort-input-asc')
-expect(columnAsc).toBeInTheDocument();
-const columnDesc = screen.getByTestId('column-sort-input-desc')
-expect(columnDesc).toBeInTheDocument();
-const sortBtn = screen.getByTestId('column-sort-button')
-expect(sortBtn).toBeInTheDocument();
-expect(sortBtn).toBeEnabled();
-expect(sortBtn).toBeValid();
-
-await waitFor (() => { 
-userEvent.selectOptions(columnSort, 'population');
-userEvent.click(columnAsc)
-userEvent.click(columnDesc)
-userEvent.click(sortBtn)
+const planetName = screen.findByRole('planet-name');
+const elements = [planetName]
+const nothingFound =  screen.findByText(/nada encontrado/i);
+expect(nothingFound).toBeDefined()
+elements.map((e) => e.name)
+expect(nothingFound).toBeDefined()
+expect(screen.getAllByRole('columnheader',planetName, {  name: /rotation_period/i}))
+expect(screen.getAllByRole('columnheader',planetName, { name: /orbital_period/i }))
+expect(screen.getAllByRole('columnheader',planetName,  {  name:  /diameter/i}))
+expect(screen.getAllByRole('columnheader',planetName,  {  name: /climate/i}))
+expect(screen.getAllByRole('columnheader',planetName,  {  name: /gravity/i}))
+expect(screen.getAllByRole('columnheader',planetName,  {  name: /terrain/i}))
+expect(screen.getAllByRole('columnheader',planetName,  {  name: /surface_water/i}))
+expect(screen.getAllByRole('columnheader',planetName,  {  name: /population/i}))
+expect(screen.getAllByRole('columnheader',planetName,  {  name: /films/i}))
+expect(screen.getAllByRole('columnheader',planetName,  {  name: /created/i}))
+expect(screen.getAllByRole('columnheader',planetName,  {  name: /edited/i}))
+expect(screen.getAllByRole('columnheader',planetName,  {  name: /url/i}))
 
 })
 
-
-      
-  });
-  });
+  })
 })
