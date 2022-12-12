@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import PlanetsConxtet from "../context/PlanetsContext";
 
 
@@ -9,10 +9,14 @@ function Table(){
     // const [dataSearchName, setdataSearchName ] = useState([])
     const [click, setClick] = useState(false)
     // const [dataRender, setDataRender] = useState([])
-    const [sortOrder, setsortOrder] = useState({
-      column: 'population',
-      sort: 'ASC',
-    });
+    // const sortPlis = [{ column: 'population'}, { sort: 'ASC'}]
+    // const [sortOrder, setsortOrder] = useState(sortPlis, data)
+    const [sortOrder, setsortOrder] = useState(
+      'ASC'
+    );
+    const [sortColumn, setSortColumn] = useState (
+     'population'
+    )
 
     // const searchName= () => {
     //   const dataSearchName = data.filter((el) => el.name.toUpperCase().includes(search.name?.toUpperCase()))
@@ -147,20 +151,52 @@ function Table(){
 
      }
 
-    //  const sorted = () =>{
+
+      // useEffect(() => {
+      //   setsortOrder(data)
+      //   console.log(setsortOrder(data));
+      //   // setClick(false)
+      // },[])
+
+     const sorted = () =>{
+      // const nothingfoundUnknown = data.filter((p) => p[sortOrder.column] !== 'unknown');
+      // const whithUnknow = data.filter((p) => p[sortOrder.column] === 'unknown');
+      // const sorted = nothingfoundUnknown.sort((a, b) => (
+      //   sortOrder.sort === 'ASC'
+      //     ? a[sortOrder.column] - b[sortOrder.column]
+      //     : b[sortOrder.column] - a[sortOrder.column]
+      // ));
+    
+      // const array = [...sorted, ...whithUnknow];
+      // return array;
       
+    //   const array = data.filter((el) => el[sortOrder.column]);
+    //   console.log(array);
       
-    //     const array = data.filter((el) => el[sortOrder.column]);
-    //     console.log(array);
-        
-    //     if (sortOrder.sort === 'ASC') {
-    //       array.sort((a, b) => (+a[sortOrder.column]) - (+b[sortOrder.column]));
-    //     } else {
-    //       array.sort((a, b) => (+b[sortOrder.column]) - (+a[sortOrder.column]));
-    //     }
-    //     // setInformation(array)
-    //     setData(array)
-    //   };
+    //   if (sortOrder.sort === 'ASC') {
+    //     array.sort((a, b) => (+a[sortOrder.column]) - (+b[sortOrder.column]));
+    //   } else {
+    //     array.sort((a, b) => (+b[sortOrder.column]) - (+a[sortOrder.column]));
+    //   }
+    //  console.log(setsortOrder(...data)); 
+
+    //   // setInformation(array)
+    //   console.log(setData(array)); 
+    //   console.log(setData(...array));
+    //           console.log(setData([...array]));
+
+        // const test = (data.filter((el) => el))
+        // setData([...sortOrder.column])
+        const array = data.filter((el) => el[sortColumn]  !== 'unknown') 
+
+        const Elements = data.filter((el) => el[sortColumn] === 'unknown');
+        if (sortOrder === 'ASC') {
+          array.sort((a, b) => (+a[sortColumn]) - (+b[sortColumn]));
+        } else {
+          array.sort((a, b) => (+b[sortColumn]) - (+a[sortColumn]));
+        }
+        setData([...array, ...Elements]);        
+      };
        
     return (
       <>
@@ -222,7 +258,7 @@ function Table(){
         
 
             <div>
-            {/* <label htmlFor="column">
+             <label htmlFor="column">
           Coluna:
           <select
             data-testid="column-sort"
@@ -231,7 +267,7 @@ function Table(){
             // id="column"
             value={ sortOrder}
             // onChange={ ({ target }) => setsortOrder(target.value) }
-            onChange={ ({ target }) => setsortOrder(target.value) }
+            onChange={ ({ target }) => setSortColumn(target.value) }
           >
             {arrayColum.map((opt) => (
               <option key={ opt } value={ opt }>{opt}</option>
@@ -246,9 +282,9 @@ function Table(){
           type='radio'
           data-testid='column-sort-input-asc'
           value='ASC' 
-          checked={ sortOrder.sort === 'ASC' }
-          // onChange={ () => setsortOrder('ASC')}
-          onChange={ ({ target }) => setsortOrder({column: search.column})  }
+          checked={ sortOrder === 'ASC'}
+          onChange={ () => setsortOrder('ASC')}
+          // onChange={ ({ target }) => setsortOrder({...sortOrder,column: search.column})  }
           /> 
           
           Ascendente
@@ -261,20 +297,20 @@ function Table(){
           type='radio'
           data-testid='column-sort-input-desc'
           value='DESC'
-          checked={ sortOrder.sort === 'DESC' }
-          // onChange={ () => setsortOrder('DESC')}
-          onChange={ ({ target }) => setsortOrder({column: search.column}) }
+          checked={ sortOrder === 'DESC' }
+          onChange={ () => setsortOrder('DESC')}
+          // onChange={ ({ target }) => setsortOrder({...sortOrder, column: search.column}) }
           />
           Descendente 
           
-        </label> */}
-        {/* <button
+        </label> 
+         <button
         type="button"
         data-testid='column-sort-button'
-        onClick={sorted}
+        onClick={() => sorted()}
         >
           Ordenar
-        </button> */}
+        </button> 
               
              <div>
         {filters.map((e) => (
@@ -284,7 +320,7 @@ function Table(){
             </span>
     
             <button
-            onClick={remove}
+            onClick={(event)=> remove(event)}
             type='button'
             
             value={e.column}
