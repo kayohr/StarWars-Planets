@@ -1,13 +1,9 @@
-# :construction: README customizado em construção ! :construction:
-<!-- Olá, Tryber!
-Esse é apenas um arquivo inicial para o README do seu projeto no qual você pode customizar e reutilizar todas as vezes que for executar o trybe-publisher.
+O objetivo desse projeto é, pegar a API e aplicar filtragens usando React, e com as informações da API, filtrar os planetas que tem no filme do Star Wars, filtrando por habitante, tamanho e galaxia.
 
-Para deixá-lo com a sua cara, basta alterar o seguinte arquivo da sua máquina: ~/.student-repo-publisher/custom/_NEW_README.md
+O que precisei para fazer o projeto:
 
-É essencial que você preencha esse documento por conta própria, ok?
-Não deixe de usar nossas dicas de escrita de README de projetos, e deixe sua criatividade brilhar!
-:warning: IMPORTANTE: você precisa deixar nítido:
-- quais arquivos/pastas foram desenvolvidos por você; 
-- quais arquivos/pastas foram desenvolvidos por outra pessoa estudante;
-- quais arquivos/pastas foram desenvolvidos pela Trybe.
--->
+Context API do React para gerenciar estado.
+React Hook useState;
+React Hook useContext;
+React Hook useEffect;
+React Hooks customizados.
